@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 
 
 import { cn } from "@/lib/utils";
+import { ModeToggle } from "@/components/mode-toggle";
 
 
 const font = Poppins({
@@ -16,7 +17,7 @@ const font = Poppins({
     subsets: ["latin"]
 
 });
-
+ 
 export const Navbar =() =>{
     return(
         <div className ="fixed w-full z-50 flex justify-between items-center py-2 px-4 border-b border-primary/10 bg-secondary">
@@ -33,6 +34,7 @@ export const Navbar =() =>{
                     Upgrade
                     <Sparkle className= "h-4 w-4 fill-white text-white ml-2"/>
                 </Button>
+                <ModeToggle />
                 <UserButton />   
             </div>
         </div>

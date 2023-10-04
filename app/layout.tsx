@@ -5,6 +5,9 @@ import { Inter } from 'next/font/google'
 //added for auth
 import { ClerkProvider } from '@clerk/nextjs'
 
+
+import { ThemeProvider } from '@/components/theme-provider'
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -20,9 +23,20 @@ export default function RootLayout({
   //Auth part: wrap the entire application with clerk provider
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body className={inter.className}>{children}</body>
+      <html lang="en" suppressHydrationWarning>
+        <body className={inter.className}>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+           {children}
+          </ThemeProvider>
+          </body>
       </html>
     </ClerkProvider>
   )
 }
+
+
+//for mode changing, if you want to stay in one mode
+//you can force it
+//change here: <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+//to  <ThemeProvider attribute="class" forcedTheme="dark" enableSystem>
+
