@@ -1,9 +1,10 @@
 "use client";
 
-import { Menu } from "lucide-react"; //for the menu icon md: middum device
+import { Menu, Sparkle } from "lucide-react"; //for the menu icon md: middum device
 import Link from "next/link";
 import { Poppins } from "next/font/google";
 import { UserButton } from "@clerk/nextjs";
+//https://ui.shadcn.com/docs/components/button
 import { Button } from "@/components/ui/button";
 
 
@@ -28,8 +29,9 @@ export const Navbar =() =>{
                 </Link>
             </div>
             <div className = "flex items-center gap-x-3">
-                <Button>
-                    
+                <Button variant="premium" size ="sm">
+                    Upgrade
+                    <Sparkle className= "h-4 w-4 fill-white text-white ml-2"/>
                 </Button>
                 <UserButton />   
             </div>
