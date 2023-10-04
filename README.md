@@ -1,4 +1,6 @@
 ***This project is for self-studying purpose, all credit goes to the author of this video: https://www.youtube.com/watch?v=PjYWpd7xkaM ****Happy Coding***
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
