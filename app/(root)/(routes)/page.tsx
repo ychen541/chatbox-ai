@@ -2,7 +2,9 @@
 //we can find the @test(route) by adding /test to localhost
 //EX: http://localhost:3000/test
 
-import { UserButton } from "@clerk/nextjs";
+import { SearchInput } from "@/components/search-input";
+
+
 
 /*
 Route groups:
@@ -28,9 +30,8 @@ we dont need to add /test to whatever folder that page is exsit
 //https://clerk.com/docs/components/user/user-button
 const RootPage = () =>{
     return (
-        <div>
-            <UserButton afterSignOutUrl="/"/> 
-
+        <div className ="h-full p-4 space-y-2">
+            <SearchInput/>
         </div> //only login user can see this page
     );
 }
