@@ -8,6 +8,8 @@ import { ClerkProvider } from '@clerk/nextjs'
 
 import { ThemeProvider } from '@/components/theme-provider'
 
+import { cn } from "@/lib/utils";
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -21,10 +23,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   //Auth part: wrap the entire application with clerk provider
+  //add cn ("bg-secondary") to body so that the whole UI looks better
   return (
-    <ClerkProvider>
+    <ClerkProvider> 
       <html lang="en" suppressHydrationWarning>
-        <body className={inter.className}>
+        <body className={cn("bg-secondary", inter.className)}> 
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
            {children}
           </ThemeProvider>
