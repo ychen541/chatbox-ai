@@ -2,7 +2,9 @@
 //we can find the @test(route) by adding /test to localhost
 //EX: http://localhost:3000/test
 
+import { Categories } from "@/components/categories";
 import { SearchInput } from "@/components/search-input";
+import prismadb from "@/lib/prismadb";
 
 
 
@@ -28,10 +30,17 @@ we dont need to add /test to whatever folder that page is exsit
 
 //userButton is a clerk api that creates profile for an accout
 //https://clerk.com/docs/components/user/user-button
-const RootPage = () =>{
+
+
+//fetch category in the server component, make it have access to db
+const RootPage = async() =>{
+    //make it async so await don't have error
+    const categories = await prismadb.category.findMany();
+
     return (
         <div className ="h-full p-4 space-y-2">
             <SearchInput/>
+            <Categories data={categories} />
         </div> //only login user can see this page
     );
 }
