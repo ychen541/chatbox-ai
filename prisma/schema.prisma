@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -13,4 +14,40 @@ datasource db {
 model Category{
   id            String @id @default(uuid())
   name          String
+  companion     Companion[]
 }
+
+
+model Companion{
+  id            String @id @default(uuid())
+  userId        String
+  userName      String
+  src           String  //image for each compainions
+  name          String @db.Text  //will make it searchable
+  description   String
+  instructions  String @db.Text  
+  seed          String @db.Text 
+
+
+  createAt     DateTime @default(now()) 
+  updatedAt    DateTime @updatedAt
+
+
+  //add relation between category and new compainon
+  category     Category @relation(fields: [categoryId], references:[id])
+  categoryId   String
+
+
+  @@index([categoryId]) 
+  @@fulltext([name]) //enable full text search
+}
+
+
+
+//everytime modify this file
+//run this
+//npx prisma generate
+//npx prisma db push 
+
+//if showing "Error: P1001: Can't reach database server at `aws.connect.psdb.cloud`:`3306`" when runing db push 
+//try this :nc -zv aws.connect.psdb.cloud 3306 
