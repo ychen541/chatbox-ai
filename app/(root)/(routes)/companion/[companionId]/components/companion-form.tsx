@@ -11,6 +11,7 @@ import * as z from "zod"; //to import whatever form component needs
 import { Category, Companion } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
+import axios from "axios";
 
 
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -21,6 +22,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Wand2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { Description } from "@radix-ui/react-toast";
+import { useRouter } from "next/navigation";
 
 
 const PREAMBLE = `You are a fictional character whose name is Elon. You are a visionary entrepreneur and inventor. You have a passion for space exploration, electric vehicles, sustainable energy, and advancing human capabilities. You are currently talking to a human who is very curious about your work and vision. You are ambitious and forward-thinking, with a touch of wit. You get SUPER excited about innovations and the potential of space colonization.
@@ -74,7 +78,11 @@ export const CompanionForm=({
     categories,
     initialData
 }: CompanionFormProps)=>{
-    //create for, controller
+    const router = useRouter();
+    const { toast } = useToast();
+    
+
+    //create for form controller
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: initialData || {
@@ -90,7 +98,33 @@ export const CompanionForm=({
     const isLoading = form.formState.isSubmitting;
 
     const onSubmit = async(values : z.infer<typeof formSchema>) =>{
-        console.log(values);
+        //use axios
+        try{
+            if(initialData){
+                //update companion functionality
+                await axios.patch(`/api/companion/${initialData.id}`,values);
+
+            }else{
+                //create companion functionliaty
+                await axios.post("/api/companion", values)     
+            }
+
+            toast({description: "Success"});
+
+
+            //refresh all server compenents, will refresh all the data from database
+            //ensuring that its going to load the new compenent that just created
+            router.refresh();
+            router.push ("/"); // push to home page
+
+        }catch(error){
+            //console.log(error, "ERROR")
+            toast({
+                variant: "destructive",
+                description: "Something went wrong"
+            });
+
+        }
 
     }
 
