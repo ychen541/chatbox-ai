@@ -1,15 +1,18 @@
 "use client";
 
-import { BotAvater } from "@/components/ui/bot-avatar";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useToast } from "@/components/ui/use-toast";
-import { useUser } from "@clerk/nextjs";
-import { Companion,Message } from "@prisma/client";
-import axios from "axios";
 
-import { ChevronLeft, Edit, MessageSquare, MoreVertical, Trash } from "lucide-react";
+import { Companion,Message } from "@prisma/client";
+
+
+
 import { useRouter } from "next/navigation";
+import { FormEvent, useState } from "react";
+
+import {useCompletion } from "ai/react"
+import { ChatHeader } from "@/components/chat-header";
+import { ChatForm } from "@/components/chat-form";
+import { ChatMessages } from "@/components/chat-messages";
+import { ChatMessageProps } from "@/components/chat-message";
 
 
 interface ChatClientProps{
@@ -26,71 +29,66 @@ export const ChatClient =({
 }:ChatClientProps) =>{
     const router = useRouter();
 
-    const {user } = useUser();
+   const [messages, setMessages] = useState<ChatMessageProps[]>(companion.messages)
 
-    const {toast} = useToast();
+   const {
+    input,
+    isLoading,
+    handleInputChange,
+    handleSubmit,
+    setInput,
+   } = useCompletion({
+    api: `/api/chat/${companion.id}`,
+    onFinish(prompt, completion){
+        const systemMessage: ChatMessageProps = {
+            role : "system",
+            content: completion
+        };
 
-    const onDelete = async () =>{
-        try{
-            await axios.delete(`/api/companion/${companion.id}`);
+        setMessages((current)=> [...current, systemMessage]);
+        setInput("");
 
-            toast({
-                description: "Success."
-            });
 
-            router.refresh();
-            router.push("/");
-        }catch(error){
-            toast({
-                description: "something went wrong",
-                variant: "destructive"
-            })
-        }
+        router.refresh();
     }
-    
-    return(
-        <div className="flex w-full justify-between items-center border-b border-primary/10 pb-4">
-            <div className="flex gap-x-2 items-center">
-                <Button onClick={()=>router.back()} size="icon" variant="ghost">
-                    <ChevronLeft className="h-8 w-8"/>
-                </Button>
-                <BotAvater src ={companion.src}/>
-                <div className="flex flex-col gap-y-1">
-                    <div className="flex items-center gap-x-2">
-                        <p className="font bold">
-                            {companion.name}
-                        </p>
-                        <div className="flex items-center text-xs text-muted-foreground">
-                            <MessageSquare className="w-3 h-3 mr-1"/>
-                            {companion._count.messages}
-                        </div>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                        Created by {companion.userName}
-                    </p>
-                </div>
-            </div>
-            {user?.id === companion.userId &&(
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="secondary" size = "icon">
-                            <MoreVertical/>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align = "end">
-                        <DropdownMenuItem onClick={()=> router.push(`/companion/${companion.id}`)} >
-                            <Edit className="w-4 h-3 mr-2"/>
-                            Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick = {onDelete} >
-                            <Trash className="w-4 h-3 mr-2"/>
-                            Delete
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )}
+   });
+
+   const onSubmit =(e: FormEvent<HTMLFormElement>) => {
+    const userMessage: ChatMessageProps = {
+        role:"user",
+        content: input,
+    };
+
+    setMessages((current)=> [...current, userMessage]);
+    handleSubmit(e);
+
+   };
+
+   return(
+        <div className="flex flex-col h-full p-4 space-y-2">
+            <ChatHeader companion={companion} />
+              <ChatMessages 
+                companion = {companion}
+                isLoading = {isLoading}
+                messages = {messages}
+              />
+
+              <ChatForm 
+                isLoading = {isLoading}
+                input = {input}
+                handleInputChange = {handleInputChange}
+                onSubmit = {onSubmit}
+              />
         </div>
-    )
+
+
+   )
+
+
+
+
+    
+   
 
 }
 
