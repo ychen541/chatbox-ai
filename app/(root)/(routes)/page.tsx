@@ -3,6 +3,7 @@
 //EX: http://localhost:3000/test
 
 import { Categories } from "@/components/categories";
+import { Companions } from "@/components/companions";
 import { SearchInput } from "@/components/search-input";
 import prismadb from "@/lib/prismadb";
 
@@ -31,9 +32,35 @@ we dont need to add /test to whatever folder that page is exsit
 //userButton is a clerk api that creates profile for an accout
 //https://clerk.com/docs/components/user/user-button
 
-
+interface RootPageProps{
+    searchParams:{
+        categoryId: string
+        name: string
+    }
+}
 //fetch category in the server component, make it have access to db
-const RootPage = async() =>{
+const RootPage = async({
+    searchParams
+}: RootPageProps) =>{
+    const data = await prismadb.companion.findMany({
+        where:{
+            categoryId: searchParams.categoryId,
+            name:{
+                search: searchParams.name
+            }
+        },
+        orderBy:{
+            createAt: "desc"
+        },
+        include:{
+            _count:{
+                select:{
+                    messages:true
+                }
+            }
+        }
+    })
+
     //make it async so await don't have error
     const categories = await prismadb.category.findMany();
 
@@ -41,6 +68,7 @@ const RootPage = async() =>{
         <div className ="h-full p-4 space-y-2">
             <SearchInput/>
             <Categories data={categories} />
+            <Companions data={data} />
         </div> //only login user can see this page
     );
 }
