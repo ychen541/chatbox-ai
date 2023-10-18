@@ -1,0 +1,8 @@
+npm i @pinecone-database/pinecone
+: vector database for creating embeddics in order to make an advanced AI model
+
+npm i @upstash/redis
+: a redis database for long term memory
+
+npm i @upstash/ratelimit
+: add the limiting
